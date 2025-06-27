@@ -8,6 +8,8 @@ import uk from './uk.json';
 import vi from './vi.json';
 import zhHans from './zh_Hans.json';
 import zhHant from './zh_Hant.json';
+import ptBR from './pt_BR.json';
+
 
 export interface LanguageInfo {
     readonly name: string;
@@ -57,6 +59,12 @@ export const ALL_LANGUAGES: Record<string, LanguageInfo> = {
         alternativeLanguageTag: 'ja-JP',
         content: ja
     },
+    'pt-BR': {
+        name: 'Portuguese (Brazil)',
+        displayName: 'Português (Brasil)',
+        alternativeLanguageTag: 'pt-BR',
+        content: ptBR
+    },
     'ru': {
         name: 'Russian',
         displayName: 'Русский',
@@ -88,5 +96,5 @@ export const ALL_LANGUAGES: Record<string, LanguageInfo> = {
         alternativeLanguageTag: 'zh-TW',
         aliases: ['zh-CHT', 'zh-TW', 'zh-HK', 'zh-MO'],
         content: zhHant
-    }
+    },
 };

@@ -10,6 +10,7 @@
         "Spanish": "Spagnolo",
         "Italian": "Italiano",
         "Japanese": "Giapponese",
+        "Portuguese (Brazil)": "Portoghese (Brasile)",
         "Russian": "Russo",
         "Ukrainian": "Ucraino",
         "Vietnamese": "Vietnamese",
@@ -24,10 +25,10 @@
         "shortDateFormat": "DDMMYYYY",
         "longTimeFormat": "HHMMSS",
         "shortTimeFormat": "HHMM",
-        "decimalSeparator": "Dot",
-        "digitGroupingSymbol": "Comma",
+        "decimalSeparator": "Comma",
+        "digitGroupingSymbol": "Dot",
         "digitGrouping": "ThousandsSeparator",
-        "currencyDisplayType": "SymbolBeforeAmount"
+        "currencyDisplayType": "SymbolAfterAmount"
     },
     "format": {
         "longDate": {
@@ -81,17 +82,17 @@
             "hh_mm_a": "hh:mm A"
         },
         "yearQuarter": {
-            "q1": "{year}Q1",
-            "q2": "{year}Q2",
-            "q3": "{year}Q3",
-            "q4": "{year}Q4"
+            "q1": "T1 {year}",
+            "q2": "T2 {year}",
+            "q3": "T3 {year}",
+            "q4": "T4 {year}"
         },
         "fiscalYear": {
-            "StartYYYY_EndYYYY": "FY {StartYYYY}-{EndYYYY}",
-            "StartYYYY_EndYY": "FY {StartYYYY}-{EndYY}",
-            "StartYY_EndYY": "FY {StartYY}-{EndYY}",
-            "EndYYYY": "FY {EndYYYY}",
-            "EndYY": "FY {EndYY}"
+            "StartYYYY_EndYYYY": "AF {StartYYYY}-{EndYYYY}",
+            "StartYYYY_EndYY": "AF {StartYYYY}-{EndYY}",
+            "StartYY_EndYY": "AF {StartYY}-{EndYY}",
+            "EndYYYY": "AF {EndYYYY}",
+            "EndYY": "AF {EndYY}"
         },
         "misc": {
             "multiTextJoinSeparator": ", ",
@@ -118,7 +119,10 @@
     },
     "dataExport": {
         "defaultExportFilename": "ezBookkeeping_export_data",
-        "exportFilename": "ezBookkeeping_{nickname}_export_data"
+        "exportFilename": "ezBookkeeping_{nickname}_export_data",
+        "defaultExportStatisticsFileName": "ezBookkeeping_statistics_data",
+        "exportStatisticsFileName": "ezBookkeeping_{nickname}_statistics_data",
+        "defaultImportDataMappingFileName": "ezBookkeeping_import_data_mapping"
     },
     "datetime": {
         "AM": {
@@ -1179,6 +1183,8 @@
         "invalid beancount file": "File Beancount non valido",
         "not support include directive for beancount file": "Direttiva \"include\" non supportata per il file Beancount",
         "invalid amount expression": "Espressione dell'importo non valida",
+        "invalid xml file": "Invalid XML file",
+        "invalid mt940 file": "Invalid MT940 file",
         "user custom exchange rate data not found": "User custom exchange rate data is not found",
         "cannot update exchange rate data for base currency": "Cannot update exchange rate data for base currency",
         "cannot delete exchange rate data for base currency": "Cannot delete exchange rate data for base currency",
@@ -1326,6 +1332,7 @@
     "None": "Nessuno",
     "Unspecified": "Non specificato",
     "Not set": "Non impostato",
+    "No limit": "No limit",
     "No results": "Nessun risultato",
     "Unknown": "Sconosciuto",
     "Auto detect": "Rilevamento automatico",
@@ -1429,7 +1436,11 @@
     "Select All Invalid Items": "Seleziona tutti gli elementi non validi",
     "Back": "Indietro",
     "Load More": "Carica altro",
+    "Export Results": "Export Results",
     "No data": "Nessun dato",
+    "Data copied": "Data copied",
+    "Table": "Table",
+    "Raw Data": "Raw Data",
     "Zoom in": "Ingrandisci",
     "Zoom out": "Riduci",
     "Drag to Reorder": "Trascina per riordinare",
@@ -1651,6 +1662,8 @@
     "Same time as default timezone": "Stessa ora del fuso orario predefinito",
     "Transaction Type": "Tipo di transazione",
     "Geographic Location": "Posizione geografica",
+    "Longitude": "Longitude",
+    "Latitude": "Latitude",
     "No Location": "Nessuna posizione",
     "Getting Location...": "Recupero posizione...",
     "Show on the map": "Mostra sulla mappa",
@@ -1684,6 +1697,8 @@
     "Month-day-year format": "Formato mese-giorno-anno",
     "Day-month-year format": "Formato giorno-mese-anno",
     "Intuit Interchange Format (IIF) File": "File Intuit Interchange Format (IIF)",
+    "Camt.053 Bank to Customer Statement File": "Camt.053 Bank to Customer Statement File",
+    "MT940 Consumer Statement Message File": "MT940 Consumer Statement Message File",
     "Delimiter-separated Values (DSV) File": "File valori separati da delimitatore (DSV)",
     "Delimiter-separated Values (DSV) Data": "Dati valori separati da delimitatore (DSV)",
     "GnuCash XML Database File": "File database XML GnuCash",
@@ -1714,6 +1729,9 @@
     "Cannot import invalid transactions": "Impossibile importare transazioni non valide",
     "Unable to parse import file": "Impossibile analizzare il file di importazione",
     "Unable to import transactions": "Unable to import transactions",
+    "Load Data Mapping File": "Load Data Mapping File",
+    "Save Data Mapping File": "Save Data Mapping File",
+    "Data mapping file is invalid": "Data mapping file is invalid",
     "Batch Replace Selected Expense Categories": "Sostituisci in blocco categorie di spesa selezionate",
     "Batch Replace Selected Income Categories": "Sostituisci in blocco categorie di entrata selezionate",
     "Batch Replace Selected Transfer Categories": "Sostituisci in blocco categorie di trasferimento selezionate",
@@ -1814,6 +1832,7 @@
     "Maximum Amount": "Importo massimo",
     "Display Order": "Ordine di visualizzazione",
     "Name": "Nome",
+    "Proportion (%)": "Proportion (%)",
     "Sort by Amount": "Ordina per importo",
     "Sort by Display Order": "Ordina per ordine di visualizzazione",
     "Sort by Name": "Ordina per nome",
@@ -1915,8 +1934,10 @@
     "Data Management": "Gestione dati",
     "Unable to retrieve user statistics data": "Impossibile recuperare i dati statistici dell'utente",
     "Export Data": "Esporta dati",
+    "File Format": "File Format",
     "CSV (Comma-separated values) File": "File CSV (valori separati da virgola)",
     "TSV (Tab-separated values) File": "File TSV (valori separati da tabulazione)",
+    "Markdown File": "Markdown File",
     "Clear User Data": "Cancella dati utente",
     "Export all transaction data to file.": "Esporta tutti i dati delle transazioni in un file.",
     "Are you sure you want to export all transaction data to file?": "Sei sicuro di voler esportare tutti i dati delle transazioni in un file?",

@@ -2,7 +2,7 @@ name: Build with Script and Push Docker Image
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "prod" ]
 
 jobs:
   build-and-publish:

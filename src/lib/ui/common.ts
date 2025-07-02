@@ -1,6 +1,10 @@
+import Clipboard from 'clipboard';
+
 import { ThemeType } from '@/core/theme.ts';
 
 import { type AmountColor, PresetAmountColor } from '@/core/color.ts';
+
+import logger from '../logger.ts';
 
 export function getSystemTheme(): ThemeType {
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -76,6 +80,49 @@ export function setExpenseAndIncomeAmountColor(expenseAmountColorType: number, i
     }
 }
 
+export function copyTextToClipboard(text: string, container?: Element | null): void {
+    Clipboard.copy(text, {
+        container: container || document.body
+    });
+}
+
+export function openTextFileContent({ allowedExtensions }: { allowedExtensions: string }): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const fileInput = document.createElement('input');
+
+        fileInput.style.display = 'none';
+        fileInput.type = 'file';
+        fileInput.accept = allowedExtensions;
+
+        fileInput.onchange = (event) => {
+            const el = event.target as HTMLInputElement;
+
+            if (el.files && el.files.length > 0) {
+                const file = el.files[0];
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    const content = e.target?.result;
+
+                    if (typeof content === 'string') {
+                        resolve(content);
+                    } else {
+                        reject(new Error('failed to load file, because file reader result is not string'));
+                    }
+                };
+
+                reader.onerror = (error) => {
+                    logger.error('failed to load file', error);
+                };
+
+                reader.readAsText(file);
+            }
+        };
+
+        fileInput.click();
+    });
+}
+
 export function startDownloadFile(fileName: string, fileData: Blob): void {
     const dataObjectUrl = URL.createObjectURL(fileData);
     const dataLink = document.createElement('a');
@@ -87,4 +134,40 @@ export function startDownloadFile(fileName: string, fileData: Blob): void {
     document.body.appendChild(dataLink);
 
     dataLink.click();
+}
+
+export function clearBrowserCaches(): Promise<void> {
+    if (!window.caches) {
+        logger.error('caches API is not supported in this browser');
+        return Promise.reject();
+    }
+
+    return new Promise((resolve, reject) => {
+        window.caches.keys().then(cacheNames => {
+            const promises = [];
+
+            for (let i = 0; i < cacheNames.length; i++) {
+                const cacheName = cacheNames[i];
+                promises.push(window.caches.delete(cacheName).then(success => {
+                    if (success) {
+                        logger.info(`cache "${cacheName}" cleared successfully`);
+                        return Promise.resolve(cacheName);
+                    } else {
+                        logger.warn(`failed to clear cache "${cacheName}"`);
+                        return Promise.reject(cacheName);
+                    }
+                }));
+            }
+
+            Promise.all(promises).then(() => {
+                logger.info("all caches cleared successfully");
+                resolve();
+            }).catch(() => {
+                resolve();
+            });
+        }).catch(error => {
+            logger.warn("failed to clear cache", error);
+            reject(error);
+        });
+    });
 }

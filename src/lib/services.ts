@@ -2,6 +2,12 @@ import axios, { type AxiosRequestConfig, type AxiosRequestHeaders, type AxiosRes
 
 import type { ApiResponse } from '@/core/api.ts';
 
+import type {
+    ApplicationCloudSetting
+} from '@/core/setting.ts';
+import type {
+    VersionInfo
+} from '@/core/version.ts';
 import {
     TransactionType
 } from '@/core/transaction.ts';
@@ -33,6 +39,7 @@ import type {
     RegisterResponse
 } from '@/models/auth_response.ts';
 import type {
+    ExportTransactionDataRequest,
     ClearDataRequest,
     DataStatisticsResponse
 } from '@/models/data_management.ts';
@@ -119,6 +126,9 @@ import type {
     UserProfileUpdateRequest,
     UserProfileUpdateResponse
 } from '@/models/user.ts';
+import type {
+    UserApplicationCloudSettingsUpdateRequest
+} from '@/models/user_app_cloud_setting.ts';
 
 import {
     getCurrentToken,
@@ -308,6 +318,15 @@ export default {
     resendVerifyEmailByLoginedUser: (): ApiResponsePromise<boolean> => {
         return axios.post<ApiResponse<boolean>>('v1/users/verify_email/resend.json');
     },
+    getUserApplicationCloudSettings: (): ApiResponsePromise<ApplicationCloudSetting[] | false> => {
+        return axios.get<ApiResponse<ApplicationCloudSetting[] | false>>('v1/users/settings/cloud/get.json');
+    },
+    updateUserApplicationCloudSettings: (req: UserApplicationCloudSettingsUpdateRequest): ApiResponsePromise<boolean> => {
+        return axios.post<ApiResponse<boolean>>('v1/users/settings/cloud/update.json', req);
+    },
+    disableUserApplicationCloudSettings: (): ApiResponsePromise<boolean> => {
+        return axios.post<ApiResponse<boolean>>('v1/users/settings/cloud/disable.json');
+    },
     get2FAStatus: (): ApiResponsePromise<TwoFactorStatusResponse> => {
         return axios.get<ApiResponse<TwoFactorStatusResponse>>('v1/users/2fa/status.json');
     },
@@ -326,13 +345,23 @@ export default {
     getUserDataStatistics: (): ApiResponsePromise<DataStatisticsResponse> => {
         return axios.get<ApiResponse<DataStatisticsResponse>>('v1/data/statistics.json');
     },
-    getExportedUserData: (fileType: string): Promise<AxiosResponse<BlobPart>> => {
+    getExportedUserData: (fileType: string, req?: ExportTransactionDataRequest): Promise<AxiosResponse<BlobPart>> => {
+        let params = '';
+
+        if (req) {
+            const amountFilter = encodeURIComponent(req.amountFilter);
+            const keyword = encodeURIComponent(req.keyword);
+            params = `max_time=${req.maxTime}&min_time=${req.minTime}&type=${req.type}&category_ids=${req.categoryIds}&account_ids=${req.accountIds}&tag_ids=${req.tagIds}&tag_filter_type=${req.tagFilterType}&amount_filter=${amountFilter}&keyword=${keyword}`;
+        } else {
+            params = 'max_time=0&min_time=0&type=0&category_ids=&account_ids=&tag_ids=&tag_filter_type=0&amount_filter=&keyword=';
+        }
+
         if (fileType === 'csv') {
-            return axios.get<BlobPart>('v1/data/export.csv', {
+            return axios.get<BlobPart>('v1/data/export.csv?' + params, {
                 timeout: DEFAULT_EXPORT_API_TIMEOUT
             } as ApiRequestConfig);
         } else if (fileType === 'tsv') {
-            return axios.get<BlobPart>('v1/data/export.tsv', {
+            return axios.get<BlobPart>('v1/data/export.tsv?' + params, {
                 timeout: DEFAULT_EXPORT_API_TIMEOUT
             } as ApiRequestConfig);
         } else {
@@ -447,7 +476,7 @@ export default {
             timeout: DEFAULT_UPLOAD_API_TIMEOUT
         } as ApiRequestConfig);
     },
-    parseImportTransaction: ({ fileType, fileEncoding, importFile, columnMapping, transactionTypeMapping, hasHeaderLine, timeFormat, timezoneFormat, amountDecimalSeparator, amountDigitGroupingSymbol, geoSeparator, tagSeparator }: { fileType: string, fileEncoding?: string, importFile: File, columnMapping?: Record<number, number>, transactionTypeMapping?: Record<string, TransactionType>, hasHeaderLine?: boolean, timeFormat?: string, timezoneFormat?: string, amountDecimalSeparator?: string, amountDigitGroupingSymbol?: string, geoSeparator?: string, tagSeparator?: string }): ApiResponsePromise<ImportTransactionResponsePageWrapper> => {
+    parseImportTransaction: ({ fileType, fileEncoding, importFile, columnMapping, transactionTypeMapping, hasHeaderLine, timeFormat, timezoneFormat, amountDecimalSeparator, amountDigitGroupingSymbol, geoSeparator, geoOrder, tagSeparator }: { fileType: string, fileEncoding?: string, importFile: File, columnMapping?: Record<number, number>, transactionTypeMapping?: Record<string, TransactionType>, hasHeaderLine?: boolean, timeFormat?: string, timezoneFormat?: string, amountDecimalSeparator?: string, amountDigitGroupingSymbol?: string, geoSeparator?: string, geoOrder?: string, tagSeparator?: string }): ApiResponsePromise<ImportTransactionResponsePageWrapper> => {
         let textualColumnMapping: string | undefined = undefined;
         let textualTransactionTypeMapping: string | undefined = undefined;
         let textualHasHeaderLine: string | undefined = undefined;
@@ -476,6 +505,7 @@ export default {
             amountDecimalSeparator: amountDecimalSeparator,
             amountDigitGroupingSymbol: amountDigitGroupingSymbol,
             geoSeparator: geoSeparator,
+            geoOrder: geoOrder,
             tagSeparator: tagSeparator
         }, {
             timeout: DEFAULT_UPLOAD_API_TIMEOUT
@@ -582,6 +612,9 @@ export default {
     },
     deleteUserCustomExchangeRate: (req: UserCustomExchangeRateDeleteRequest): ApiResponsePromise<boolean> => {
         return axios.post<ApiResponse<boolean>>('v1/exchange_rates/user_custom/delete.json', req);
+    },
+    getServerVersion: (): ApiResponsePromise<VersionInfo> => {
+        return axios.get<ApiResponse<VersionInfo>>('v1/systems/version.json');
     },
     generateQrCodeUrl: (qrCodeName: string): string => {
         return `${getBasePath()}${BASE_QRCODE_PATH}/${qrCodeName}.png`;

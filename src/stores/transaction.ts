@@ -29,6 +29,9 @@ import {
     type ImportTransactionResponsePageWrapper,
     ImportTransaction
 } from '@/models/imported_transaction.ts';
+import {
+    type ExportTransactionDataRequest
+} from '@/models/data_management.ts';
 
 import {
     getUserTransactionDraft,
@@ -780,6 +783,20 @@ export const useTransactionsStore = defineStore('transactions', () => {
         return querys.join('&');
     }
 
+    function getExportTransactionDataRequestByTransactionFilter(): ExportTransactionDataRequest {
+        return {
+            maxTime: transactionsFilter.value.maxTime,
+            minTime: transactionsFilter.value.minTime,
+            type: transactionsFilter.value.type,
+            categoryIds: transactionsFilter.value.categoryIds,
+            accountIds: transactionsFilter.value.accountIds,
+            tagIds: transactionsFilter.value.tagIds,
+            tagFilterType: transactionsFilter.value.tagFilterType,
+            amountFilter: transactionsFilter.value.amountFilter,
+            keyword: transactionsFilter.value.keyword
+        };
+    }
+
     function loadTransactions({ reload, count, page, withCount, autoExpand, defaultCurrency }: { reload?: boolean, count?: number, page?: number, withCount?: boolean, autoExpand: boolean, defaultCurrency: string }): Promise<TransactionPageWrapper> {
         let actualMaxTime = transactionsNextTimeId.value;
 
@@ -1129,9 +1146,9 @@ export const useTransactionsStore = defineStore('transactions', () => {
         });
     }
 
-    function parseImportTransaction({ fileType, fileEncoding, importFile, columnMapping, transactionTypeMapping, hasHeaderLine, timeFormat, timezoneFormat, amountDecimalSeparator, amountDigitGroupingSymbol, geoSeparator, tagSeparator }: { fileType: string, fileEncoding?: string, importFile: File, columnMapping?: Record<number, number>, transactionTypeMapping?: Record<string, TransactionType>, hasHeaderLine?: boolean, timeFormat?: string, timezoneFormat?: string, amountDecimalSeparator?: string, amountDigitGroupingSymbol?: string, geoSeparator?: string, tagSeparator?: string }): Promise<ImportTransactionResponsePageWrapper> {
+    function parseImportTransaction({ fileType, fileEncoding, importFile, columnMapping, transactionTypeMapping, hasHeaderLine, timeFormat, timezoneFormat, amountDecimalSeparator, amountDigitGroupingSymbol, geoSeparator, geoOrder, tagSeparator }: { fileType: string, fileEncoding?: string, importFile: File, columnMapping?: Record<number, number>, transactionTypeMapping?: Record<string, TransactionType>, hasHeaderLine?: boolean, timeFormat?: string, timezoneFormat?: string, amountDecimalSeparator?: string, amountDigitGroupingSymbol?: string, geoSeparator?: string, geoOrder?: string, tagSeparator?: string }): Promise<ImportTransactionResponsePageWrapper> {
         return new Promise((resolve, reject) => {
-            services.parseImportTransaction({ fileType, fileEncoding, importFile, columnMapping, transactionTypeMapping, hasHeaderLine, timeFormat, timezoneFormat, amountDecimalSeparator, amountDigitGroupingSymbol, geoSeparator, tagSeparator }).then(response => {
+            services.parseImportTransaction({ fileType, fileEncoding, importFile, columnMapping, transactionTypeMapping, hasHeaderLine, timeFormat, timezoneFormat, amountDecimalSeparator, amountDigitGroupingSymbol, geoSeparator, geoOrder, tagSeparator }).then(response => {
                 const data = response.data;
 
                 if (!data || !data.success || !data.result) {
@@ -1308,6 +1325,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
         initTransactionListFilter,
         updateTransactionListFilter,
         getTransactionListPageParams,
+        getExportTransactionDataRequestByTransactionFilter,
         loadTransactions,
         loadMonthlyAllTransactions,
         getTransaction,
